@@ -1,0 +1,34 @@
+blueprint:
+  name: Zwave Wandzender Automations
+  description: Activate a scene when a button is pressed
+  domain: automation
+  input:
+    entity_id:
+      name: Wandzender
+      description: This is the name of the wandzender
+      selector:
+        entity:
+          domain: zwave
+    scene_id:
+      name: Button number starting at 1
+      description: This is the button that is being pressed
+      selector:
+        number:
+          min: 1
+          max: 8
+    activate_scene:
+      name: Scene name
+      description: The name of the scene to be activated when the button is pressed
+      selector:
+        entity:
+          domain: scene
+
+trigger:
+  - platform: event
+    event_type: zwave.scene_activated
+    event_data:
+      entity_id: !input entity_id
+      scene_id: !input scene_id
+
+action:
+  - scene: !input activate_scene
