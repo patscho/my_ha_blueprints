@@ -1,0 +1,56 @@
+blueprint:
+  name: Zwave Wandzender Automations with condition
+  description: Based on the brightness of a lamp a scene is activated when a button on the remote control is pressed.
+  domain: automation
+  input:
+    entity_id:
+      name: remote control
+      description: This is the name of the remote control
+      selector:
+        entity:
+          domain: zwave
+    scene_id:
+      name: Button number starting at 1
+      description: This is the button that is being pressed
+      selector:
+        number:
+          min: 1
+          max: 8
+    activate_scene:
+      name: Scene name
+      description: The name of the scene to be activated when the button is pressed
+      selector:
+        entity:
+          domain: scene
+    condition_entity_id:
+      name: Lamp to compare with
+      description: Choose a lamp to compare the brightness with
+      selector:
+        entity:
+          domain: light
+    above_value:
+      name: Above
+      description: Brightness above value (type in number)
+    below_value:
+      name: Below
+      description: Brightness below value (type in number)
+
+trigger:
+  - platform: event
+    event_type: zwave.scene_activated
+    event_data:
+      entity_id: !input entity_id
+      scene_id: !input scene_id
+
+condition:
+  - condition: numeric_state
+    entity_id: !input condition_entity_id
+    attribute: brightness
+    above: !input above_value
+    below: !input below_value
+  - condition: state
+    entity_id: !input condition_entity_id
+    state: 'on'
+
+action:
+  - scene: !input activate_scene
